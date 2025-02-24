@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
+import 'voice_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -102,6 +103,20 @@ class SettingsScreen extends StatelessWidget {
                 }
               },
             ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.record_voice_over),
+            title: const Text('Voice Settings'),
+            subtitle: const Text('Customize teacher voices'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const VoiceSettingsScreen(),
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           Center(

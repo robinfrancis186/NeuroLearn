@@ -19,12 +19,14 @@ class TTSService {
   bool _isF5TTSAvailable = true;
   F5TTSConfig _config = F5TTSConfig();  // Initialize with default values
   final Map<String, File> _audioCache = {};
+  final Map<String, String> _customVoicePaths = {};
 
   TTSService._internal() {
     _audioPlayer = AudioPlayer();
     _flutterTts = FlutterTts();
     _setupFlutterTts();
     _initTTS(); // Start async initialization
+    _loadCustomVoices();
   }
 
   String? _currentVoice;
@@ -114,6 +116,12 @@ class TTSService {
     }
 
     try {
+      // Check if it's a custom voice
+      if (context != null && _customVoicePaths.containsKey(context)) {
+        await _playCustomVoice(context, text);
+        return;
+      }
+
       final voiceConfig = _voices[context ?? _currentVoice ?? 'default'] ?? _voices['default']!;
       final style = _getStyleForContext(context);
 
@@ -282,5 +290,50 @@ class TTSService {
   Future<void> dispose() async {
     await _audioPlayer.dispose();
     await _cleanCache();
+  }
+
+  Future<void> _loadCustomVoices() async {
+    final prefs = await SharedPreferences.getInstance();
+    final voicesJson = prefs.getString('custom_voices');
+    if (voicesJson != null) {
+      final Map<String, dynamic> voices = jsonDecode(voicesJson);
+      _customVoicePaths.clear();
+      voices.forEach((key, value) {
+        if (value is String) {
+          _customVoicePaths[key] = value;
+        }
+      });
+    }
+  }
+
+  Future<void> addCustomVoice(String name, String path) async {
+    _customVoicePaths[name] = path;
+    await _saveCustomVoices();
+  }
+
+  Future<void> removeCustomVoice(String name) async {
+    _customVoicePaths.remove(name);
+    await _saveCustomVoices();
+  }
+
+  Future<void> _saveCustomVoices() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('custom_voices', jsonEncode(_customVoicePaths));
+  }
+
+  Future<void> _playCustomVoice(String voiceName, String text) async {
+    final voicePath = _customVoicePaths[voiceName];
+    if (voicePath == null) return;
+
+    try {
+      final file = File(voicePath);
+      if (await file.exists()) {
+        await _audioPlayer.setFilePath(voicePath);
+        await _audioPlayer.play();
+      }
+    } catch (e) {
+      debugPrint('Error playing custom voice: $e');
+      await _fallbackSpeak(text);
+    }
   }
 } 

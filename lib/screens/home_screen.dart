@@ -8,6 +8,7 @@ import 'settings_screen.dart';
 import 'ask_question_screen.dart';
 import 'available_quizzes_screen.dart';
 import 'progress_screen.dart';
+import 'achievement_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,6 +19,15 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('NeuroLearn'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.emoji_events),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AchievementScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.timeline),
             onPressed: () {

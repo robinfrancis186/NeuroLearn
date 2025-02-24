@@ -4,6 +4,10 @@ import 'screens/home_screen.dart';
 import 'providers/learning_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/settings_provider.dart';
+import 'providers/achievement_provider.dart';
+import 'providers/statistics_provider.dart';
+import 'theme/app_theme.dart';
+import 'theme/app_colors.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,26 +23,20 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => LearningProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => AchievementProvider()),
+        ChangeNotifierProvider(create: (_) => StatisticsProvider()),
       ],
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
           return MaterialApp(
             title: 'NeuroLearn',
             debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              brightness: settings.darkMode ? Brightness.dark : Brightness.light,
-              fontFamily: 'Poppins',
-              scaffoldBackgroundColor: settings.darkMode ? Colors.grey[900] : Colors.white,
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xFF4A90E2),
-                primary: const Color(0xFF4A90E2),
-                secondary: const Color(0xFF7C4DFF),
-                background: settings.darkMode ? Colors.grey[900]! : Colors.white,
-                brightness: settings.darkMode ? Brightness.dark : Brightness.light,
-              ),
-              useMaterial3: true,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.lightTheme.copyWith(
+              brightness: Brightness.dark,
+              scaffoldBackgroundColor: AppColors.dark,
             ),
+            themeMode: settings.darkMode ? ThemeMode.dark : ThemeMode.light,
             home: const HomeScreen(),
           );
         },
