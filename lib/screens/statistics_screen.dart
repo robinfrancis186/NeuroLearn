@@ -89,7 +89,7 @@ class StatisticsScreen extends StatelessWidget {
                       SizedBox.expand(
                         child: CircularProgressIndicator(
                           value: statistics.gradesCompleted / 100,
-                          backgroundColor: const Color(0xFF66BB6A).withOpacity(0.2),
+                          backgroundColor: const Color(0xFF66BB6A).withAlpha(51),
                           valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF66BB6A)),
                           strokeWidth: 12,
                         ),
@@ -142,7 +142,7 @@ class StatisticsScreen extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withAlpha(26),
             shape: BoxShape.circle,
           ),
           child: Icon(

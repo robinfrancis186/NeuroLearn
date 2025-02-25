@@ -69,36 +69,36 @@ class AvailableQuizzesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            const Icon(Icons.quiz),
-            const SizedBox(width: 8),
-            const Text('Available Quizzes'),
-            const Spacer(),
-            Row(
-              children: [
-                const Icon(Icons.emoji_events, size: 20),
-                const SizedBox(width: 4),
-                Text(
-                  'Level 5',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            ElevatedButton.icon(
+        title: const Text('Available Quizzes'),
+        actions: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.emoji_events, size: 20),
+              const SizedBox(width: 4),
+              Text(
+                'Level 5',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(width: 16),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: ElevatedButton.icon(
               onPressed: () {
                 // TODO: Implement challenge mode
               },
-              icon: const Icon(Icons.flash_on),
-              label: const Text('Challenge Mode'),
+              icon: const Icon(Icons.flash_on, size: 16),
+              label: const Text('Challenge'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
                 foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -128,7 +128,7 @@ class AvailableQuizzesScreen extends StatelessWidget {
                               const Text('Timed'),
                             ],
                           ),
-                          backgroundColor: Colors.amber.withOpacity(0.2),
+                          backgroundColor: Colors.amber.withAlpha(51),
                           labelStyle: const TextStyle(color: Colors.amber),
                         ),
                       ],
@@ -165,6 +165,7 @@ class AvailableQuizzesScreen extends StatelessWidget {
                       ),
                       const Divider(height: 32),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
                             'Rewards:',
@@ -173,36 +174,44 @@ class AvailableQuizzesScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          ...quiz.rewards.map((reward) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 16),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
                               child: Row(
-                                children: [
-                                  const Icon(Icons.military_tech, size: 20),
-                                  const SizedBox(width: 4),
-                                  Text(reward.badge),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 2,
+                                children: quiz.rewards.map((reward) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 16),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(Icons.military_tech, size: 20),
+                                        const SizedBox(width: 4),
+                                        Text(reward.badge),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.withAlpha(25),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            '${reward.xp} XP',
+                                            style: const TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      '${reward.xp} XP',
-                                      style: const TextStyle(
-                                        color: Colors.blue,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  );
+                                }).toList(),
                               ),
-                            );
-                          }).toList(),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),

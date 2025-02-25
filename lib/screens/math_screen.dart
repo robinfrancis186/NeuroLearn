@@ -128,7 +128,7 @@ class _MathScreenState extends SubjectScreenState<MathScreen> {
 
                     return ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonColor.withOpacity(0.2),
+                        backgroundColor: buttonColor.withAlpha(51),
                         foregroundColor: buttonColor,
                         padding: const EdgeInsets.all(20),
                       ),
@@ -150,7 +150,7 @@ class _MathScreenState extends SubjectScreenState<MathScreen> {
           icon: const Icon(Icons.refresh),
           label: const Text('New Problem'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: widget.color.withOpacity(0.2),
+            backgroundColor: widget.color.withAlpha(51),
             foregroundColor: widget.color,
           ),
         ),

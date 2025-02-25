@@ -61,7 +61,7 @@ abstract class SubjectScreenState<T extends SubjectScreen> extends State<T> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.subject),
-        backgroundColor: widget.color.withOpacity(0.2),
+        backgroundColor: widget.color.withAlpha(51),
       ),
       body: Column(
         children: [
@@ -75,7 +75,7 @@ abstract class SubjectScreenState<T extends SubjectScreen> extends State<T> {
   Widget _buildAvatarSection() {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: widget.color.withOpacity(0.1),
+      color: widget.color.withAlpha(26),
       child: Row(
         children: [
           CircleAvatar(

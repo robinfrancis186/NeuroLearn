@@ -1,61 +1,104 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../providers/achievement_provider.dart';
+import 'package:provider/provider.dart';
 
 class AchievementScreen extends StatelessWidget {
-  const AchievementScreen({super.key});
+  const AchievementScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final achievementProvider = Provider.of<AchievementProvider>(context);
+    final achievements = achievementProvider.achievements;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Achievement',
+          'Achievements',
           style: TextStyle(
-            fontFamily: 'Urbanist',
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.primary.withAlpha(25),
+              AppColors.secondary.withAlpha(25),
+              AppColors.surface.withAlpha(25),
+            ],
+          ),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
           children: [
-            _buildProgressCard(),
+            const Text(
+              'Your Progress',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Urbanist',
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildProgressCard(achievementProvider),
             const SizedBox(height: 24),
-            _buildAchievementsList(),
+            const Text(
+              'Achievements',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Urbanist',
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...achievements.map((achievement) => _buildAchievementCard(achievement)).toList(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProgressCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-        borderRadius: BorderRadius.circular(12),
+  Widget _buildProgressCard(AchievementProvider provider) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: AppColors.primary.withAlpha(51),
+          width: 1,
+        ),
       ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 80,
-            height: 80,
-            child: Stack(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CircularProgressIndicator(
-                  value: 0.8,
-                  backgroundColor: AppColors.lightBg,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                  strokeWidth: 8,
+                const Text(
+                  'Overall Progress',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Urbanist',
+                  ),
                 ),
-                Center(
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withAlpha(30),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: Text(
-                    '80%',
-                    style: TextStyle(
-                      fontFamily: 'Urbanist',
-                      fontSize: 18,
+                    '${(provider.overallProgress * 100).toInt()}%',
+                    style: const TextStyle(
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
                     ),
@@ -63,149 +106,236 @@ class AchievementScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 20),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: provider.overallProgress,
+                backgroundColor: AppColors.primary.withAlpha(51),
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                minHeight: 12,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Total Achievements: 20',
-                  style: TextStyle(
-                    fontFamily: 'Urbanist',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Great job! Complete your achievements now',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    color: AppColors.textSecondary,
-                  ),
-                ),
+                _buildStatItem('Total', provider.totalAchievements.toString()),
+                _buildStatItem('Completed', provider.completedAchievements.toString()),
+                _buildStatItem('In Progress', provider.inProgressAchievements.toString()),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildAchievementsList() {
-    return Column(
-      children: [
-        _buildAchievementCard(
-          title: 'Studious',
-          description: 'You have completed this lesson 10 times.',
-          icon: Icons.school,
-          backgroundColor: const Color(0xFF90CAF9),
-          stars: 3,
-        ),
-        const SizedBox(height: 12),
-        _buildAchievementCard(
-          title: 'Quickie',
-          description: 'You have completed this quiz in less than 3 minutes, 10 times.',
-          icon: Icons.timer,
-          backgroundColor: const Color(0xFFFFD54F),
-          stars: 3,
-        ),
-        const SizedBox(height: 12),
-        _buildAchievementCard(
-          title: 'Ambitious',
-          description: 'You have achieved 15 milestones.',
-          icon: Icons.emoji_events,
-          backgroundColor: const Color(0xFF81C784),
-          stars: 3,
-        ),
-        const SizedBox(height: 12),
-        _buildAchievementCard(
-          title: 'Perfectionist',
-          description: 'You have scored 100% on quizzes 20 times.',
-          icon: Icons.star,
-          backgroundColor: const Color(0xFF64B5F6),
-          stars: 3,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAchievementCard({
-    required String title,
-    required String description,
-    required IconData icon,
-    required Color backgroundColor,
-    required int stars,
-  }) {
+  Widget _buildStatItem(String label, String value) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: backgroundColor.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.lightBg,
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: backgroundColor.withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Icon(
-              icon,
-              color: backgroundColor,
-              size: 24,
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+              fontFamily: 'Urbanist',
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontFamily: 'Urbanist',
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: List.generate(5, (index) {
-                        return Icon(
-                          index < stars ? Icons.star : Icons.star_border,
-                          color: index < stars ? backgroundColor : backgroundColor.withOpacity(0.3),
-                          size: 20,
-                        );
-                      }),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.primary.withAlpha(179),
+              fontFamily: 'Inter',
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAchievementCard(Achievement achievement) {
+    final bool isCompleted = achievement.progress >= 1.0;
+    
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: isCompleted ? LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primary.withAlpha(30),
+              AppColors.surface,
+            ],
+          ) : null,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isCompleted 
+                          ? AppColors.primary.withAlpha(51) 
+                          : AppColors.lightBg,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      achievement.icon,
+                      color: AppColors.primary.withAlpha(230),
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                achievement.title,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Urbanist',
+                                ),
+                              ),
+                            ),
+                            if (isCompleted)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withAlpha(30),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: AppColors.primary,
+                                      size: 16,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      'Completed',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          achievement.description,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.primary.withAlpha(179),
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildProgressIndicator(achievement.progress),
+                  _buildStars(achievement.stars),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProgressIndicator(double progress) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Progress: ',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Inter',
+                ),
+              ),
+              Text(
+                '${(progress * 100).toInt()}%',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                  fontFamily: 'Inter',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: AppColors.primary.withAlpha(51),
+              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              minHeight: 10,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStars(int count) {
+    return Row(
+      children: List.generate(3, (index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          child: Icon(
+            index < count ? Icons.star : Icons.star_border,
+            color: index < count
+                ? AppColors.primary.withAlpha(230)
+                : AppColors.primary.withAlpha(77),
+            size: 28,
+          ),
+        );
+      }),
     );
   }
 } 

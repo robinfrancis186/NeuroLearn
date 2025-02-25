@@ -185,7 +185,7 @@ class ProgressScreen extends StatelessWidget {
                   dotData: FlDotData(show: true),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: Colors.blue[700]!.withOpacity(0.1),
+                    color: Colors.blue[700]!.withAlpha(26),
                   ),
                 ),
               ],
@@ -238,7 +238,7 @@ class ProgressScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withAlpha(26),
             shape: BoxShape.circle,
           ),
           child: Icon(

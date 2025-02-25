@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import 'subject_screen.dart';
 
 class LifeSkillsScreen extends SubjectScreen {
@@ -145,7 +144,7 @@ class _LifeSkillsScreenState extends SubjectScreenState<LifeSkillsScreen> {
                   selected: isSelected,
                   onSelected: (_) => _changeActivity(index),
                   selectedColor: widget.color,
-                  backgroundColor: widget.color.withOpacity(0.1),
+                  backgroundColor: widget.color.withAlpha(26),
                 ),
               );
             },
@@ -162,8 +161,8 @@ class _LifeSkillsScreenState extends SubjectScreenState<LifeSkillsScreen> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 8),
                 color: isCompleted
-                    ? Colors.green.withOpacity(0.1)
-                    : widget.color.withOpacity(0.1),
+                    ? Colors.green.withAlpha(26)
+                    : widget.color.withAlpha(26),
                 child: ListTile(
                   leading: Icon(
                     isCompleted ? Icons.check_circle : Icons.circle_outlined,
@@ -190,7 +189,7 @@ class _LifeSkillsScreenState extends SubjectScreenState<LifeSkillsScreen> {
             icon: const Icon(Icons.refresh),
             label: const Text('Start Over'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: widget.color.withOpacity(0.2),
+              backgroundColor: widget.color.withAlpha(51),
               foregroundColor: widget.color,
             ),
           ),
