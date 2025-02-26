@@ -1,48 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
 import '../../../theme/app_colors.dart';
-import '../../dashboard/screens/dashboard_screen.dart';
+import '../providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isEmailLogin = true;
+  bool _rememberMe = false;
   int _currentPage = 0;
   final PageController _pageController = PageController();
 
   @override
   void dispose() {
+    _usernameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _pageController.dispose();
     super.dispose();
   }
 
-  void _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+  void _signup() async {
+    if (_usernameController.text.isEmpty || 
+        _emailController.text.isEmpty || 
+        _phoneController.text.isEmpty || 
+        _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields')),
       );
       return;
     }
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.signIn(_emailController.text, _passwordController.text);
-
-    if (authProvider.error != null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(authProvider.error!)),
-        );
-      }
+    // Here you would call the signup method from your auth provider
+    // For now, we'll just show a success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Account created successfully!')),
+    );
+    
+    // Navigate back to login screen
+    if (mounted) {
+      Navigator.pop(context);
     }
   }
 
@@ -122,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       const SizedBox(height: 8),
                                       const Text(
-                                        'Login to explore',
+                                        'Sign up to explore',
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
@@ -152,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           
-                          // Right side with login form
+                          // Right side with signup form
                           Expanded(
                             flex: MediaQuery.of(context).size.width > 800 ? 5 : 10,
                             child: Container(
@@ -161,9 +167,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  // Login header
+                                  // Signup header
                                   const Text(
-                                    'Login your account!',
+                                    'Create your account!',
                                     style: TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
@@ -171,87 +177,75 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
-                                  const SizedBox(height: 32),
+                                  const SizedBox(height: 16),
                                   
-                                  // Login type toggle
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () => setState(() => _isEmailLogin = true),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 12),
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: _isEmailLogin 
-                                                      ? AppColors.primary 
-                                                      : Colors.grey.shade300,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              'E-mail',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: _isEmailLogin 
-                                                    ? AppColors.primary 
-                                                    : Colors.grey,
-                                                fontWeight: _isEmailLogin 
-                                                    ? FontWeight.bold 
-                                                    : FontWeight.normal,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () => setState(() => _isEmailLogin = false),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 12),
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: !_isEmailLogin 
-                                                      ? AppColors.primary 
-                                                      : Colors.grey.shade300,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              'Mobile Number',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                color: !_isEmailLogin 
-                                                    ? AppColors.primary 
-                                                    : Colors.grey,
-                                                fontWeight: !_isEmailLogin 
-                                                    ? FontWeight.bold 
-                                                    : FontWeight.normal,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  const Text(
+                                    'Enter your full Details',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
                                   const SizedBox(height: 32),
                                   
-                                  // Email/Phone field
+                                  // Username field
                                   TextField(
-                                    controller: _emailController,
-                                    keyboardType: _isEmailLogin 
-                                        ? TextInputType.emailAddress 
-                                        : TextInputType.phone,
+                                    controller: _usernameController,
                                     decoration: InputDecoration(
-                                      prefixIcon: Icon(
-                                        _isEmailLogin ? Icons.email_outlined : Icons.phone_outlined,
+                                      prefixIcon: const Icon(
+                                        Icons.person_outline,
                                         color: Colors.grey,
                                       ),
-                                      hintText: _isEmailLogin ? 'Email' : 'Phone',
+                                      hintText: 'Username',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey.shade100,
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  
+                                  // Email field
+                                  TextField(
+                                    controller: _emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    decoration: InputDecoration(
+                                      prefixIcon: const Icon(
+                                        Icons.email_outlined,
+                                        color: Colors.grey,
+                                      ),
+                                      hintText: 'Email',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey.shade100,
+                                      contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  
+                                  // Phone field
+                                  TextField(
+                                    controller: _phoneController,
+                                    keyboardType: TextInputType.phone,
+                                    decoration: InputDecoration(
+                                      prefixIcon: const Icon(
+                                        Icons.phone_outlined,
+                                        color: Colors.grey,
+                                      ),
+                                      hintText: 'Phone',
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
                                         borderSide: BorderSide.none,
@@ -288,48 +282,52 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                   ),
+                                  const SizedBox(height: 16),
                                   
-                                  // Forgot password
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: TextButton(
-                                      onPressed: () {},
-                                      child: const Text(
-                                        'Forgot password?',
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
+                                  // Remember me checkbox
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: Checkbox(
+                                          value: _rememberMe,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _rememberMe = value ?? false;
+                                            });
+                                          },
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          activeColor: Colors.blue,
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  
-                                  // Login button
-                                  Consumer<AuthProvider>(
-                                    builder: (context, authProvider, _) {
-                                      return ElevatedButton(
-                                        onPressed: authProvider.isLoading ? null : _login,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.blue,
-                                          foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(vertical: 16),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          elevation: 0,
+                                      const SizedBox(width: 8),
+                                      const Text(
+                                        'Remember me',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 14,
                                         ),
-                                        child: authProvider.isLoading
-                                            ? const SizedBox(
-                                                height: 20,
-                                                width: 20,
-                                                child: CircularProgressIndicator(
-                                                  strokeWidth: 2,
-                                                  color: Colors.white,
-                                                ),
-                                              )
-                                            : const Text('Continue'),
-                                      );
-                                    },
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 24),
+                                  
+                                  // Signup button
+                                  ElevatedButton(
+                                    onPressed: _signup,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: const Text('Continue'),
                                   ),
                                   const SizedBox(height: 24),
                                   
@@ -340,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Padding(
                                         padding: EdgeInsets.symmetric(horizontal: 16),
                                         child: Text(
-                                          'Sign in With',
+                                          'Sign up With',
                                           style: TextStyle(
                                             color: Colors.grey,
                                             fontSize: 12,
@@ -352,23 +350,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   const SizedBox(height: 24),
                                   
-                                  // Social login buttons
+                                  // Social signup buttons
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      _socialLoginButton(
+                                      _socialSignupButton(
                                         icon: 'assets/icons/facebook.png',
                                         onTap: () {},
                                         fallbackIcon: Icons.facebook,
                                       ),
                                       const SizedBox(width: 16),
-                                      _socialLoginButton(
+                                      _socialSignupButton(
                                         icon: 'assets/icons/google.png',
                                         onTap: () {},
                                         fallbackIcon: Icons.g_mobiledata,
                                       ),
                                       const SizedBox(width: 16),
-                                      _socialLoginButton(
+                                      _socialSignupButton(
                                         icon: 'assets/icons/apple.png',
                                         onTap: () {},
                                         fallbackIcon: Icons.apple,
@@ -377,7 +375,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   const SizedBox(height: 24),
                                   
-                                  // Sign up link
+                                  // Login link
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -387,10 +385,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          // Navigate to sign up
+                                          Navigator.pop(context);
                                         },
                                         child: const Text(
-                                          "Sign up",
+                                          "Sign in",
                                           style: TextStyle(
                                             color: Colors.blue,
                                             fontWeight: FontWeight.bold,
@@ -446,7 +444,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'Login to explore',
+                        'Sign up to explore',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -480,7 +478,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _socialLoginButton({
+  Widget _socialSignupButton({
     required String icon,
     required VoidCallback onTap,
     required IconData fallbackIcon,
