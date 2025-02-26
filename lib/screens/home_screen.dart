@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:avatar_glow/avatar_glow.dart';
-import '../providers/learning_provider.dart';
-import '../widgets/subject_card.dart';
-import '../widgets/progress_indicator.dart';
-import '../theme/app_colors.dart';
+import '../features/learning/learning.dart';
+import '../shared/widgets/subject_card.dart';
+import '../shared/widgets/progress_indicator.dart';
+import '../core/constants/app_colors.dart';
 import 'settings_screen.dart';
 import 'ask_question_screen.dart';
 import 'available_quizzes_screen.dart';
@@ -20,6 +20,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           'NeuroLearn',
@@ -117,13 +118,11 @@ class HomeScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 24),
           children: [
             _buildHeader(context),
-            _buildAvatarSection(context),
-            _buildQuickPractice(context),
-            _buildRecommendedSection(context),
-            _buildAllSubjects(context),
+            const SizedBox(height: 24),
+            _buildSubjects(context),
           ],
         ),
       ),
@@ -136,349 +135,168 @@ class HomeScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(10),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: AppColors.shadow,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Level ${learningProvider.currentLevel}',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Keep going!',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
-          ),
-          CustomProgressIndicator(
-            progress: learningProvider.progress,
-            color: Theme.of(context).colorScheme.primary,
-            size: 60,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAvatarSection(BuildContext context) {
-    return Container(
-      height: 180,
-      alignment: Alignment.center,
-      child: AvatarGlow(
-        glowColor: Theme.of(context).colorScheme.primary.withAlpha(125),
-        endRadius: 80.0,
-        duration: const Duration(milliseconds: 2000),
-        repeat: true,
-        showTwoGlows: true,
-        repeatPauseDuration: const Duration(milliseconds: 100),
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Theme.of(context).colorScheme.primary,
-                Theme.of(context).colorScheme.secondary,
-              ],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).colorScheme.primary.withAlpha(60),
-                blurRadius: 12,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: CircleAvatar(
-            backgroundColor: Colors.transparent,
-            radius: 50,
-            child: const Icon(
-              Icons.face,
-              size: 50,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickPractice(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 12),
-            child: Text(
-              'Quick Practice',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'What is 2 + 3 when x = 2?',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: 'Enter your answer',
-                      filled: true,
-                      fillColor: AppColors.lightBg.withAlpha(100),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Check Answer',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRecommendedSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 12),
-            child: Text(
-              'Recommended for You',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 180,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _buildRecommendedCard(
-                  context,
-                  'Introduction to Mathematics',
-                  'Start your journey with basic math concepts',
-                  Icons.calculate,
-                  const Color(0xFF4A90E2),
-                  '25 mins',
-                ),
-                _buildRecommendedCard(
-                  context,
-                  'Geometry Fundamentals',
-                  'Explore shapes, angles, and spatial relationships',
-                  Icons.architecture,
-                  const Color(0xFF66BB6A),
-                  '30 mins',
-                ),
-                _buildRecommendedCard(
-                  context,
-                  'Basic Algebra',
-                  'Learn about variables, equations, and expressions',
-                  Icons.functions,
-                  const Color(0xFF9C27B0),
-                  '20 mins',
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRecommendedCard(
-    BuildContext context,
-    String title,
-    String description,
-    IconData icon,
-    Color color,
-    String duration,
-  ) {
-    return Container(
-      width: 280,
-      margin: const EdgeInsets.only(right: 16),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: color.withAlpha(30),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(icon, color: color, size: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
+              AvatarGlow(
+                glowColor: AppColors.primary,
+                endRadius: 40,
+                duration: const Duration(milliseconds: 2000),
+                repeat: true,
+                showTwoGlows: true,
+                animate: learningProvider.isAvatarSpeaking,
+                child: const CircleAvatar(
+                  radius: 30,
+                  backgroundColor: AppColors.primary,
+                  child: Icon(Icons.person, color: AppColors.onPrimary),
+                ),
               ),
-              const SizedBox(height: 12),
-              Text(
-                description,
-                style: Theme.of(context).textTheme.bodyMedium,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: color.withAlpha(30),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      duration,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome back!',
                       style: TextStyle(
-                        color: color,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onSurface,
                       ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                    Text(
+                      'Ready to continue learning?',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.onSurface.withOpacity(0.6),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
-                    child: const Text('Start Lesson'),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildProgressItem(
+                context,
+                'Level',
+                learningProvider.currentLevel.toString(),
+                Icons.star,
+              ),
+              _buildProgressItem(
+                context,
+                'Progress',
+                '${(learningProvider.progress * 100).toInt()}%',
+                Icons.trending_up,
+              ),
+              _buildProgressItem(
+                context,
+                'Subject',
+                learningProvider.currentSubject,
+                Icons.book,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildAllSubjects(BuildContext context) {
+  Widget _buildProgressItem(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: AppColors.primary,
+            size: 24,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.onSurface,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.onSurface.withOpacity(0.6),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSubjects(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 12),
-            child: Text(
-              'All Subjects',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          Text(
+            'Choose a Subject',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.onBackground,
             ),
           ),
+          const SizedBox(height: 16),
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 2,
-            crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            children: const [
+            crossAxisSpacing: 16,
+            children: [
               SubjectCard(
                 subject: 'Math',
                 icon: Icons.calculate,
-                color: Color(0xFF4A90E2),
+                color: AppColors.subjectColors['Math']!,
               ),
               SubjectCard(
                 subject: 'Language',
-                icon: Icons.language,
-                color: Color(0xFF66BB6A),
+                icon: Icons.translate,
+                color: AppColors.subjectColors['Languages']!,
               ),
               SubjectCard(
                 subject: 'Memory',
                 icon: Icons.psychology,
-                color: Color(0xFF9C27B0),
+                color: AppColors.subjectColors['Science']!,
               ),
               SubjectCard(
                 subject: 'Life Skills',
-                icon: Icons.accessibility_new,
-                color: Color(0xFFFFA726),
+                icon: Icons.emoji_objects,
+                color: AppColors.subjectColors['Arts']!,
               ),
             ],
           ),

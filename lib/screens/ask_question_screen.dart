@@ -1,4 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import '../shared/services/tts_service.dart';
+import '../providers/question_provider.dart';
+import 'package:provider/provider.dart';
 
 class AskQuestionScreen extends StatefulWidget {
   const AskQuestionScreen({super.key});
@@ -37,6 +42,10 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
       'responses': 2,
     },
   ];
+
+  File? _selectedImage;
+  bool _isListening = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -91,23 +100,42 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.image),
-                  onPressed: () {
-                    // TODO: Implement image upload
+                  onPressed: () async {
+                    // Implement image upload using image picker
+                    final ImagePicker picker = ImagePicker();
+                    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                    if (image != null) {
+                      setState(() {
+                        _selectedImage = File(image.path);
+                      });
+                    }
                   },
                   tooltip: 'Add image',
                 ),
                 IconButton(
                   icon: const Icon(Icons.mic),
-                  onPressed: () {
-                    // TODO: Implement voice input
+                  onPressed: () async {
+                    final tts = TTSService();
+                    if (_isListening) {
+                      await tts.stop();
+                      setState(() => _isListening = false);
+                    } else {
+                      setState(() => _isListening = true);
+                      try {
+                        final result = await tts.startListening();
+                        if (result != null) {
+                          _questionController.text = result;
+                        }
+                      } finally {
+                        setState(() => _isListening = false);
+                      }
+                    }
                   },
                   tooltip: 'Voice input',
                 ),
                 const Spacer(),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement question submission
-                  },
+                  onPressed: _submitQuestion,
                   icon: const Icon(Icons.send),
                   label: const Text('Ask Question'),
                   style: ElevatedButton.styleFrom(
@@ -316,5 +344,41 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
         ),
       ],
     );
+  }
+
+  Future<void> _submitQuestion() async {
+    if (_questionController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a question')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final response = await Provider.of<QuestionProvider>(context, listen: false)
+          .submitQuestion(
+        question: _questionController.text,
+        image: _selectedImage,
+      );
+      
+      if (mounted) {
+        Navigator.pushNamed(
+          context,
+          '/answer',
+          arguments: response,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 } 
